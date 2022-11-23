@@ -2,6 +2,7 @@ import {
   Controller,
   UseControllerProps,
   useFormContext,
+  useWatch,
 } from "react-hook-form";
 import {
   Checkbox,
@@ -26,24 +27,52 @@ const DYNAMIC_COMPONENTS: Record<ControlType, any> = {
 };
 
 function CheckControl({
+  conditions = [],
   defaultValue,
   label,
   control,
   fieldName,
 }: DynamicFieldData & Pick<UseControllerProps, "control">) {
-  return (
-    <FormControl>
-      <Controller
+  const fieldValue = useWatch({ control, name: fieldName });
+
+  const getSubfield = () => {
+    const subfield =
+      conditions.length > 0
+        ? conditions.find((currentField) => currentField.is === fieldValue)
+        : null;
+
+    console.log("subfield", conditions, subfield);
+
+    if (!subfield) return null;
+
+    const DynamicComponent = DYNAMIC_COMPONENTS[subfield.inputType];
+
+    return (
+      <DynamicComponent
         control={control}
-        defaultValue={defaultValue}
-        name={fieldName}
-        render={({ field: { onChange, ref, value } }) => (
-          <Checkbox isChecked={value} onChange={onChange} ref={ref}>
-            {label}
-          </Checkbox>
-        )}
+        defaultValue={subfield.defaultValue}
+        fieldName={subfield.fieldName}
+        label={subfield.label}
       />
-    </FormControl>
+    );
+  };
+
+  return (
+    <>
+      <FormControl>
+        <Controller
+          control={control}
+          defaultValue={defaultValue}
+          name={fieldName}
+          render={({ field: { onChange, ref, value } }) => (
+            <Checkbox isChecked={value} onChange={onChange} ref={ref}>
+              {label}
+            </Checkbox>
+          )}
+        />
+      </FormControl>
+      {getSubfield()}
+    </>
   );
 }
 
@@ -105,6 +134,7 @@ export default function DynamicControl({
   label,
   options = [],
   config = {},
+  conditions = [],
 }: DynamicFieldData) {
   const { control, register } = useFormContext();
 
@@ -113,13 +143,16 @@ export default function DynamicControl({
   if (!DynamicComponent) return null;
 
   return (
-    <DynamicComponent
-      config={config}
-      control={control}
-      defaultValue={defaultValue}
-      fieldName={fieldName}
-      label={label}
-      register={register}
-    />
+    <>
+      <DynamicComponent
+        conditions={conditions}
+        config={config}
+        control={control}
+        defaultValue={defaultValue}
+        fieldName={fieldName}
+        label={label}
+        register={register}
+      />
+    </>
   );
 }

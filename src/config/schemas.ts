@@ -12,6 +12,22 @@ const comment = {
   defaultValue: "",
 };
 
+const diabetic = {
+  fieldName: "diabetic",
+  inputType: "checkbox",
+  label: "Diabetico",
+  defaultValue: false,
+  conditions: [
+    {
+      is: true,
+      fieldName: "insuline",
+      inputType: "checkbox",
+      label: "Usa Insulina",
+      defaultValue: false,
+    },
+  ],
+};
+
 const hypertension = {
   fieldName: "hypertension",
   inputType: "checkbox",
@@ -20,7 +36,7 @@ const hypertension = {
 };
 
 const SCHEMAS = {
-  myocardialInfarction: [hypertension, abcScale, comment],
+  myocardialInfarction: [hypertension, abcScale, diabetic, comment],
 };
 
 export default SCHEMAS;

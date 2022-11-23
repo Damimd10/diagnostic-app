@@ -13,10 +13,12 @@ export interface SelectOption {
 }
 
 export interface DynamicFieldData {
+  conditions?: DynamicFieldData[];
   label: string;
   inputType: ControlType;
   fieldName: string;
   defaultValue: any;
   options?: SelectOption[];
   config?: RegisterOptions;
+  is?: boolean;
 }
