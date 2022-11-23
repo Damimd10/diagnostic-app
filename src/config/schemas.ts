@@ -5,6 +5,13 @@ const abcScale = {
   defaultValue: 0,
 };
 
+const comment = {
+  fieldName: "comment",
+  inputType: "textarea",
+  label: "Comentarios",
+  defaultValue: "",
+};
+
 const hypertension = {
   fieldName: "hypertension",
   inputType: "checkbox",
@@ -13,7 +20,7 @@ const hypertension = {
 };
 
 const SCHEMAS = {
-  myocardialInfarction: [hypertension, abcScale],
+  myocardialInfarction: [hypertension, abcScale, comment],
 };
 
 export default SCHEMAS;

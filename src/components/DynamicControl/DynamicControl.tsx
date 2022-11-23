@@ -15,12 +15,14 @@ import {
   NumberInputStepper,
 } from "@chakra-ui/react";
 import { ControlType, DynamicFieldData } from "../../types";
+import TextAreaControl from "../TextAreaControl";
 
 const DYNAMIC_COMPONENTS: Record<ControlType, any> = {
   checkbox: CheckControl,
   numeric: NumericControl,
   select: () => null,
   text: TextControl,
+  textarea: TextAreaControl,
 };
 
 function CheckControl({
