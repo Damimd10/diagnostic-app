@@ -1,8 +1,11 @@
-import { Controller, useFormContext } from "react-hook-form";
+import {
+  Controller,
+  UseControllerProps,
+  useFormContext,
+} from "react-hook-form";
 import {
   Checkbox,
   FormControl,
-  FormHelperText,
   FormLabel,
   Input,
   NumberDecrementStepper,
@@ -11,11 +14,12 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
-import { DynamicFieldData } from "../../types";
+import { ControlType, DynamicFieldData } from "../../types";
 
-const DYNAMIC_COMPONENTS: any = {
+const DYNAMIC_COMPONENTS: Record<ControlType, any> = {
   checkbox: CheckControl,
   numeric: NumericControl,
+  select: () => null,
   text: TextControl,
 };
 
@@ -24,7 +28,7 @@ function CheckControl({
   label,
   control,
   fieldName,
-}: DynamicFieldData & { control: any; register: any }) {
+}: DynamicFieldData & Pick<UseControllerProps, "control">) {
   return (
     <FormControl>
       <Controller
@@ -46,7 +50,7 @@ function NumericControl({
   defaultValue,
   fieldName,
   label,
-}: DynamicFieldData & { control: any }) {
+}: DynamicFieldData & Pick<UseControllerProps, "control">) {
   return (
     <FormControl>
       <FormLabel>{label}</FormLabel>
@@ -68,13 +72,11 @@ function NumericControl({
 }
 
 function TextControl({
-  config,
   control,
   defaultValue,
   fieldName,
   label,
-  register,
-}: DynamicFieldData & { control: any; register: any }) {
+}: DynamicFieldData & Pick<UseControllerProps, "control">) {
   return (
     <FormControl>
       <FormLabel>{label}</FormLabel>
@@ -90,7 +92,6 @@ function TextControl({
           />
         )}
       />
-      <FormHelperText>We'll never share your email.</FormHelperText>
     </FormControl>
   );
 }

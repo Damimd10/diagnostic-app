@@ -1,6 +1,6 @@
 import { RegisterOptions } from "react-hook-form";
 
-export type ControlType = "text" | "select" | "number" | "checkbox";
+export type ControlType = "text" | "select" | "numeric" | "checkbox";
 
 export interface SelectOption {
   label: string;
