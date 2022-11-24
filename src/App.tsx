@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   Card,
+  Container,
   Divider,
   FormControl,
   FormLabel,
   FormErrorMessage,
-  Container,
+  Heading,
 } from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
 
@@ -31,14 +32,25 @@ const DIAGNOSTIC_GROUPS: DiagnosticGroup[] = [
   },
 ];
 
-interface FormValues {
-  diagnostic: DiagnosticGroup[] | null;
+interface FormSchema {
+  [key: string]: DynamicFieldData[];
 }
 
-const DEFAULT_VALUES: FormValues = { diagnostic: [] };
+interface FormValues {
+  diagnostics: DiagnosticGroup[] | null;
+}
+
+const DEFAULT_VALUES: FormValues = { diagnostics: [] };
+
+const removeDuplicates = (list: DynamicFieldData[]) =>
+  list.filter(
+    (item, index) =>
+      index ===
+      list.findIndex((otherItem) => item.fieldName === otherItem.fieldName),
+  );
 
 function App() {
-  const [fields, setFields] = useState<DynamicFieldData[]>([]);
+  const [form, setForm] = useState<FormSchema>({});
 
   const { control, watch } = useForm<FormValues>({
     defaultValues: DEFAULT_VALUES,
@@ -46,13 +58,29 @@ function App() {
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
-      console.log(name, type, value);
-      if (
+      const diagnostics = value.diagnostics;
+      const isDiagnosticChange = name === "diagnostics" && type === "change";
+
+      if (isDiagnosticChange && diagnostics && diagnostics.length > 0) {
+        const forms = diagnostics.map(
+          (diagnostic) => SCHEMAS[diagnostic?.value],
+        );
+
+        const parsedSections = forms.flat().reduce((acc, form) => {
+          const [key] = Object.keys(form);
+          return {
+            ...acc,
+            [key]: removeDuplicates([...(acc[key] || []), ...form[key]]),
+          };
+        }, {});
+
+        setForm(parsedSections);
+      }
+      /* if (
         name === "diagnostic" &&
         type === "change" &&
         value.diagnostic?.length
       ) {
-        console.log("checking", value.diagnostic);
         const schemas = value.diagnostic.map(
           // @ts-ignore
           (current) => SCHEMAS[current.value],
@@ -67,10 +95,8 @@ function App() {
             ),
         );
 
-        console.log(filteredFields);
-
         setFields(filteredFields);
-      }
+      } */
     });
 
     return () => subscription.unsubscribe();
@@ -81,13 +107,12 @@ function App() {
       <Card p={4} variant="elevated">
         <Controller
           control={control}
-          name="diagnostic"
+          name="diagnostics"
           render={({ field, fieldState: { error } }) => (
             <FormControl pb={4} isInvalid={!!error} id="diagnostic">
               <FormLabel>Diagnostico de Internacion</FormLabel>
               <Select
                 {...field}
-                closeMenuOnSelect={false}
                 isMulti
                 options={DIAGNOSTIC_GROUPS}
                 placeholder="Diagnostico"
@@ -97,7 +122,14 @@ function App() {
           )}
         />
         <Divider />
-        <Form fields={fields} />
+        {Object.entries(form).map(([key, value]) => (
+          <>
+            <Heading key={key} size="xs" textTransform="uppercase">
+              {key}
+            </Heading>
+            <Form fields={value} />
+          </>
+        ))}
       </Card>
     </Container>
   );

@@ -36,8 +36,14 @@ const hypertension = {
 };
 
 const SCHEMAS = {
-  myocardialInfarction: [hypertension, abcScale, diabetic, comment],
-  coronaryBypassSurgery: [hypertension],
+  myocardialInfarction: [
+    { background: [hypertension, diabetic, comment] },
+    { internment: [abcScale] },
+  ],
+  coronaryBypassSurgery: [
+    { background: [hypertension] },
+    { internment: [abcScale] },
+  ],
 };
 
 export default SCHEMAS;
