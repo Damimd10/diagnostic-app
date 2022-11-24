@@ -13,6 +13,7 @@ import { Select } from "chakra-react-select";
 import Form from "./components/Form";
 
 import SCHEMAS from "./config/schemas";
+import { DynamicFieldData } from "./types";
 
 interface DiagnosticGroup {
   label: string;
@@ -31,13 +32,13 @@ const DIAGNOSTIC_GROUPS: DiagnosticGroup[] = [
 ];
 
 interface FormValues {
-  diagnostic: DiagnosticGroup | null;
+  diagnostic: DiagnosticGroup[] | null;
 }
 
-const DEFAULT_VALUES: FormValues = { diagnostic: null };
+const DEFAULT_VALUES: FormValues = { diagnostic: [] };
 
 function App() {
-  const [fields, setFields] = useState([]);
+  const [fields, setFields] = useState<DynamicFieldData[]>([]);
 
   const { control, watch } = useForm<FormValues>({
     defaultValues: DEFAULT_VALUES,
@@ -45,14 +46,30 @@ function App() {
 
   useEffect(() => {
     const subscription = watch((value, { name, type }) => {
+      console.log(name, type, value);
       if (
         name === "diagnostic" &&
         type === "change" &&
-        value.diagnostic &&
-        value.diagnostic.value
+        value.diagnostic?.length
       ) {
-        // @ts-ignore
-        setFields(SCHEMAS[value.diagnostic.value]);
+        console.log("checking", value.diagnostic);
+        const schemas = value.diagnostic.map(
+          // @ts-ignore
+          (current) => SCHEMAS[current.value],
+        );
+
+        const flattenFields: DynamicFieldData[] = schemas.flat();
+        const filteredFields = flattenFields.filter(
+          (currentField, index) =>
+            index ===
+            flattenFields.findIndex(
+              (otherField) => currentField.fieldName === otherField.fieldName,
+            ),
+        );
+
+        console.log(filteredFields);
+
+        setFields(filteredFields);
       }
     });
 
@@ -70,6 +87,8 @@ function App() {
               <FormLabel>Diagnostico de Internacion</FormLabel>
               <Select
                 {...field}
+                closeMenuOnSelect={false}
+                isMulti
                 options={DIAGNOSTIC_GROUPS}
                 placeholder="Diagnostico"
               />
