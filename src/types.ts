@@ -12,13 +12,15 @@ export interface SelectOption {
   value: string;
 }
 
+type ConditionFunction = (args: any) => boolean;
+
 export interface DynamicFieldData {
-  conditions?: DynamicFieldData[];
+  fields?: DynamicFieldData[];
   label: string;
   inputType: ControlType;
   fieldName: string;
   defaultValue: any;
   options?: SelectOption[];
   config?: RegisterOptions;
-  is?: boolean;
+  condition?: ConditionFunction;
 }

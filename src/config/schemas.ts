@@ -17,9 +17,9 @@ const diabetic = {
   inputType: "checkbox",
   label: "Diabetico",
   defaultValue: false,
-  conditions: [
+  fields: [
     {
-      is: true,
+      condition: (isChecked: boolean) => isChecked,
       fieldName: "insuline",
       inputType: "checkbox",
       label: "Usa Insulina",

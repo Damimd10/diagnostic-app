@@ -1,5 +1,13 @@
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
+import {
+  Card,
+  Divider,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Container,
+} from "@chakra-ui/react";
 import { Select } from "chakra-react-select";
 
 import Form from "./components/Form";
@@ -29,38 +37,50 @@ interface FormValues {
 const DEFAULT_VALUES: FormValues = { diagnostic: null };
 
 function App() {
-  const { control, handleSubmit, register, watch } = useForm<FormValues>({
+  const [fields, setFields] = useState([]);
+
+  const { control, watch } = useForm<FormValues>({
     defaultValues: DEFAULT_VALUES,
   });
 
-  const watchedDiagnostic = watch("diagnostic");
-  let fields = [];
+  useEffect(() => {
+    const subscription = watch((value, { name, type }) => {
+      if (
+        name === "diagnostic" &&
+        type === "change" &&
+        value.diagnostic &&
+        value.diagnostic.value
+      ) {
+        // @ts-ignore
+        setFields(SCHEMAS[value.diagnostic.value]);
+      }
+    });
 
-  if (watchedDiagnostic?.value) {
-    const value: string = watchedDiagnostic.value;
-    fields = SCHEMAS[value] || [];
-  }
+    return () => subscription.unsubscribe();
+  }, [watch]);
 
   return (
-    <div>
-      <Controller
-        control={control}
-        name="diagnostic"
-        render={({ field, fieldState: { error } }) => (
-          <FormControl isInvalid={!!error} id="diagnostic">
-            <FormLabel>Diagnostico de Internacion</FormLabel>
-            <Select
-              {...field}
-              options={DIAGNOSTIC_GROUPS}
-              placeholder="Diagnostico"
-            />
-
-            <FormErrorMessage>{error && error.message}</FormErrorMessage>
-          </FormControl>
-        )}
-      />
-      <Form fields={fields} />
-    </div>
+    <Container maxW="md" p={4}>
+      <Card p={4} variant="elevated">
+        <Controller
+          control={control}
+          name="diagnostic"
+          render={({ field, fieldState: { error } }) => (
+            <FormControl pb={4} isInvalid={!!error} id="diagnostic">
+              <FormLabel>Diagnostico de Internacion</FormLabel>
+              <Select
+                {...field}
+                options={DIAGNOSTIC_GROUPS}
+                placeholder="Diagnostico"
+              />
+              <FormErrorMessage>{error && error.message}</FormErrorMessage>
+            </FormControl>
+          )}
+        />
+        <Divider />
+        <Form fields={fields} />
+      </Card>
+    </Container>
   );
 }
 

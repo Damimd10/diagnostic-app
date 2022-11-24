@@ -15,8 +15,13 @@ import {
   NumberInputField,
   NumberInputStepper,
 } from "@chakra-ui/react";
+
 import { ControlType, DynamicFieldData } from "../../types";
+
+import CheckControl from "../CheckControl";
+import NumericControl from "../NumericControl";
 import TextAreaControl from "../TextAreaControl";
+import TextControl from "../TextControl";
 
 const DYNAMIC_COMPONENTS: Record<ControlType, any> = {
   checkbox: CheckControl,
@@ -26,133 +31,44 @@ const DYNAMIC_COMPONENTS: Record<ControlType, any> = {
   textarea: TextAreaControl,
 };
 
-function CheckControl({
-  conditions = [],
-  defaultValue,
-  label,
-  control,
-  fieldName,
-}: DynamicFieldData & Pick<UseControllerProps, "control">) {
-  const fieldValue = useWatch({ control, name: fieldName });
-
-  const getSubfield = () => {
-    const subfield =
-      conditions.length > 0
-        ? conditions.find((currentField) => currentField.is === fieldValue)
-        : null;
-
-    console.log("subfield", conditions, subfield);
-
-    if (!subfield) return null;
-
-    const DynamicComponent = DYNAMIC_COMPONENTS[subfield.inputType];
-
-    return (
-      <DynamicComponent
-        control={control}
-        defaultValue={subfield.defaultValue}
-        fieldName={subfield.fieldName}
-        label={subfield.label}
-      />
-    );
-  };
-
-  return (
-    <>
-      <FormControl>
-        <Controller
-          control={control}
-          defaultValue={defaultValue}
-          name={fieldName}
-          render={({ field: { onChange, ref, value } }) => (
-            <Checkbox isChecked={value} onChange={onChange} ref={ref}>
-              {label}
-            </Checkbox>
-          )}
-        />
-      </FormControl>
-      {getSubfield()}
-    </>
-  );
-}
-
-function NumericControl({
-  control,
-  defaultValue,
-  fieldName,
-  label,
-}: DynamicFieldData & Pick<UseControllerProps, "control">) {
-  return (
-    <FormControl>
-      <FormLabel>{label}</FormLabel>
-      <Controller
-        control={control}
-        name={fieldName}
-        render={() => (
-          <NumberInput defaultValue={defaultValue}>
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-        )}
-      />
-    </FormControl>
-  );
-}
-
-function TextControl({
-  control,
-  defaultValue,
-  fieldName,
-  label,
-}: DynamicFieldData & Pick<UseControllerProps, "control">) {
-  return (
-    <FormControl>
-      <FormLabel>{label}</FormLabel>
-      <Controller
-        control={control}
-        name={fieldName}
-        render={({ field: { onChange, ref } }) => (
-          <Input
-            defaultValue={defaultValue}
-            onChange={onChange}
-            ref={ref}
-            type="text"
-          />
-        )}
-      />
-    </FormControl>
-  );
-}
-
 export default function DynamicControl({
-  inputType,
-  fieldName,
+  config = {},
   defaultValue,
+  fieldName,
+  fields = [],
+  inputType,
   label,
   options = [],
-  config = {},
-  conditions = [],
 }: DynamicFieldData) {
-  const { control, register } = useFormContext();
+  const { control, register, watch } = useFormContext();
+
+  const watchedValue = watch(fieldName);
 
   const DynamicComponent = DYNAMIC_COMPONENTS[inputType];
 
   if (!DynamicComponent) return null;
 
+  const hasChildrens = fields.length > 0;
+
   return (
-    <>
+    <FormControl py={2}>
       <DynamicComponent
-        conditions={conditions}
         config={config}
         control={control}
         defaultValue={defaultValue}
         fieldName={fieldName}
+        fields={fields}
         label={label}
         register={register}
       />
-    </>
+      {hasChildrens &&
+        fields.map((currentField) =>
+          currentField.condition?.(watchedValue) ? (
+            <FormControl py={2}>
+              <DynamicControl key={currentField.fieldName} {...currentField} />
+            </FormControl>
+          ) : null,
+        )}
+    </FormControl>
   );
 }

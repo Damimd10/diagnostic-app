@@ -1,22 +1,27 @@
 import { Controller, UseControllerProps } from "react-hook-form";
-import { FormLabel, Textarea } from "@chakra-ui/react";
+import { FormLabel, Input } from "@chakra-ui/react";
+
 import { DynamicFieldData } from "../../types";
 
-export default function TextAreaControl({
+export default function TextControl({
   control,
   defaultValue,
   fieldName,
   label,
-}: DynamicFieldData & UseControllerProps) {
+}: DynamicFieldData & Pick<UseControllerProps, "control">) {
   return (
     <>
       <FormLabel>{label}</FormLabel>
       <Controller
         control={control}
-        defaultValue={defaultValue}
         name={fieldName}
         render={({ field: { onChange, ref } }) => (
-          <Textarea onChange={onChange} placeholder="Comentarios" ref={ref} />
+          <Input
+            defaultValue={defaultValue}
+            onChange={onChange}
+            ref={ref}
+            type="text"
+          />
         )}
       />
     </>
