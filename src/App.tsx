@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+  Box,
   Card,
   Container,
   Divider,
@@ -76,27 +77,6 @@ function App() {
 
         setForm(parsedSections);
       }
-      /* if (
-        name === "diagnostic" &&
-        type === "change" &&
-        value.diagnostic?.length
-      ) {
-        const schemas = value.diagnostic.map(
-          // @ts-ignore
-          (current) => SCHEMAS[current.value],
-        );
-
-        const flattenFields: DynamicFieldData[] = schemas.flat();
-        const filteredFields = flattenFields.filter(
-          (currentField, index) =>
-            index ===
-            flattenFields.findIndex(
-              (otherField) => currentField.fieldName === otherField.fieldName,
-            ),
-        );
-
-        setFields(filteredFields);
-      } */
     });
 
     return () => subscription.unsubscribe();
@@ -123,12 +103,13 @@ function App() {
         />
         <Divider />
         {Object.entries(form).map(([key, value]) => (
-          <>
-            <Heading key={key} size="xs" textTransform="uppercase">
+          <Box py={4}>
+            <Heading key={key} size="xs" textTransform="uppercase" py={2}>
               {key}
             </Heading>
+            <Divider />
             <Form fields={value} />
-          </>
+          </Box>
         ))}
       </Card>
     </Container>
