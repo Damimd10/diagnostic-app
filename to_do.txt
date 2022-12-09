@@ -1,0 +1,21 @@
+Notas:
+
+- Ejemplo pase de guardia estructurado: https://docs.google.com/document/d/1erh-NUvyeOLuZBgmzcwe80ytq4aLmCXKuuc85x7boA0/edit?usp=sharing
+
+- Aprovechar el espacio horizontal. Distribuir los componentes en al menos 2 columnas? La text area final de cada sección (comment) puede ocupar ambas columnas.
+
+- Componentes: 
+  * Función de ocultar/borrar componentes
+  * Corregir checkboxes muestran label y título (duplicado)
+  
+- Secciones:
+  * Aceptar nombres con espacios en blanco en vez de "_"
+  * Estilo diferente para el nombre de sección, que lo jerarquice rápidamente por encima de un label (ej: otro color, otro tamaño)
+  
+- Diagnósticos: Debe existir un template "básico" aunque no haya ningún diagnóstico seleccionado. Este template puede variar según el contexto, una opción simple
+  puede ser ocultar el nombre de un diagnóstico preseleccionado al inicio, en este caso: "Internado".
+
+- La estructura debería ser localhost:xxxx/paciente_ID/episodio_ID/. Cada paciente puede tener múltiples episodios (ej: varias internaciones, o distintas consultas
+  ambulatorias)
+
+- Conexión a DB: onBlur de cada field realizar console.log([paciente_ID, episodio_ID, fieldName, Value]). Yo me encargo de conectarlo a la DB a partir de eso.

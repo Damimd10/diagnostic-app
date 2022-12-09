@@ -24,12 +24,16 @@ interface DiagnosticGroup {
 
 const DIAGNOSTIC_GROUPS: DiagnosticGroup[] = [
   {
+    label: "Internado",
+    value: "onPatient",
+  },
+  {
     label: "Infarto de Miocardio",
     value: "myocardialInfarction",
   },
   {
-    label: "Cirugia de Bypass Coronario",
-    value: "coronaryBypassSurgery",
+    label: "Embolia pulmonar",
+    value: "pulmonaryEmbolism",
   },
 ];
 
@@ -90,7 +94,7 @@ function App() {
           name="diagnostics"
           render={({ field, fieldState: { error } }) => (
             <FormControl pb={4} isInvalid={!!error} id="diagnostic">
-              <FormLabel>Diagnostico de Internacion</FormLabel>
+              <FormLabel>Diagnostico de internacion</FormLabel>
               <Select
                 {...field}
                 isMulti
