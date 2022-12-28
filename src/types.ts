@@ -24,3 +24,9 @@ export interface DynamicFieldData {
   config?: RegisterOptions;
   condition?: ConditionFunction;
 }
+
+export interface Patient {}
+
+export interface GetPatients {
+  patients: Patient[];
+}
