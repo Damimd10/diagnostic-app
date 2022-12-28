@@ -1,43 +1,29 @@
-import { Flex, FlexProps, Icon, Link } from "@chakra-ui/react";
-import { IconType } from "react-icons";
-import { ReactText } from "react";
+import { Flex, useColorModeValue } from "@chakra-ui/react";
 
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  children: ReactText;
+interface NavItemProps {
+  children: React.ReactNode;
+  hc: number;
+  onClick: (hc: number) => void;
 }
-export default function NavItem({ icon, children, ...rest }: NavItemProps) {
+
+export default function NavItem({ children, hc, onClick }: NavItemProps) {
   return (
-    <Link
-      href="#"
-      style={{ textDecoration: "none" }}
-      _focus={{ boxShadow: "none" }}
+    <Flex
+      align="center"
+      px="4"
+      py="3"
+      cursor="pointer"
+      role="group"
+      fontWeight="semibold"
+      transition=".15s ease"
+      color={useColorModeValue("inherit", "gray.400")}
+      _hover={{
+        bg: useColorModeValue("gray.100", "gray.900"),
+        color: useColorModeValue("gray.900", "gray.200"),
+      }}
+      onClick={() => onClick(hc)}
     >
-      <Flex
-        align="center"
-        p="4"
-        mx="4"
-        borderRadius="lg"
-        role="group"
-        cursor="pointer"
-        _hover={{
-          bg: "cyan.400",
-          color: "white",
-        }}
-        {...rest}
-      >
-        {icon && (
-          <Icon
-            mr="4"
-            fontSize="16"
-            _groupHover={{
-              color: "white",
-            }}
-            as={icon}
-          />
-        )}
-        {children}
-      </Flex>
-    </Link>
+      {children}
+    </Flex>
   );
 }

@@ -25,7 +25,12 @@ export interface DynamicFieldData {
   condition?: ConditionFunction;
 }
 
-export interface Patient {}
+export interface Patient {
+  Cama: string;
+  id: string;
+  HC: number;
+  Nombre: string;
+}
 
 export interface GetPatients {
   patients: Patient[];

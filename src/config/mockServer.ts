@@ -13,8 +13,7 @@ export function mockServer({ environment = "development" }) {
       patient: Factory.extend<Partial<Patient>>({}),
     },
     seeds(server) {
-      server.createList("patient", 20);
-      server.db.loadData(patients);
+      server.db.loadData({ patients });
     },
     routes() {
       this.urlPrefix = "http://localhost:5173/api";

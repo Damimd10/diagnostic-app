@@ -5,11 +5,13 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 import App from "./App";
-import Diagnostic from "./pages/Diagnostic";
 import Layout from "./components/Layout";
 import "./index.css";
 
 import { mockServer } from "./config/mockServer";
+
+const Auth = React.lazy(() => import("./pages/Auth"));
+const Diagnostic = React.lazy(() => import("./pages/Diagnostic"));
 
 const environment = process.env.NODE_ENV || "development";
 const queryClient = new QueryClient({
@@ -36,6 +38,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
             <Route path="/" element={<Layout />}>
               <Route index element={<Diagnostic />} />
             </Route>
+            <Route path="/signup" element={<Auth />} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>

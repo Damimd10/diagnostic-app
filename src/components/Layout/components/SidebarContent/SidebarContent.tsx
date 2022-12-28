@@ -1,24 +1,18 @@
+import { useRef } from "react";
 import {
   Box,
   BoxProps,
   CloseButton,
   Flex,
-  Heading,
   Skeleton,
-  Stack,
-  StackDivider,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { IconType } from "react-icons";
-import {
-  FiHome,
-  FiTrendingUp,
-  FiCompass,
-  FiStar,
-  FiSettings,
-} from "react-icons/fi";
+
+import NavItem from "../NavItem";
 import usePatients from "../../../../hooks/usePatients";
+import { useStore } from "./../../../../stores/useStore";
 
 interface SidebarProps extends BoxProps {
   onClose: () => void;
@@ -29,17 +23,15 @@ interface LinkItemProps {
   icon: IconType;
 }
 
-const LinkItems: Array<LinkItemProps> = [
-  { name: "Home", icon: FiHome },
-  { name: "Trending", icon: FiTrendingUp },
-  { name: "Explore", icon: FiCompass },
-  { name: "Favourites", icon: FiStar },
-  { name: "Settings", icon: FiSettings },
-];
-
 export default function SidebarContent({ onClose, ...rest }: SidebarProps) {
+  const updateSelectedPatient = useStore(
+    (state) => state.updateSelectedPatient,
+  );
+
+  const headerRef = useRef<HTMLDivElement | null>(null);
+
   const query = usePatients();
-  console.log(query);
+
   return (
     <Box
       transition="3s ease"
@@ -51,29 +43,40 @@ export default function SidebarContent({ onClose, ...rest }: SidebarProps) {
       h="full"
       {...rest}
     >
-      <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
+      <Flex
+        ref={headerRef}
+        h="20"
+        alignItems="center"
+        mx="8"
+        justifyContent="space-between"
+      >
         <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
           Logo
         </Text>
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
-      <Box display="flex">
-        <Stack divider={<StackDivider />} spacing="4">
-          {query.isLoading && <Skeleton height="20px" />}
-          {!query.isLoading &&
-            query.data &&
-            query.data.patients.map((patient) => (
-              <Box>
-                <Heading size="xs" textTransform="uppercase">
-                  Summary
-                </Heading>
-                <Text pt="2" fontSize="sm">
-                  View a summary of all your clients over the last month.
-                </Text>
-              </Box>
-            ))}
-        </Stack>
-      </Box>
+      <Flex
+        aria-label="Main Navigation"
+        as="nav"
+        color="gray.600"
+        direction="column"
+        fontSize="sm"
+        maxHeight={`calc(100% - ${headerRef.current?.clientHeight}px)`}
+        overflow="auto"
+      >
+        {query.isLoading && <Skeleton height="20px" />}
+        {!query.isLoading &&
+          query.data &&
+          query.data.patients.map((patient) => (
+            <NavItem
+              key={patient.HC}
+              hc={patient.HC}
+              onClick={updateSelectedPatient}
+            >
+              {patient.Nombre}
+            </NavItem>
+          ))}
+      </Flex>
     </Box>
   );
 }
